@@ -1,11 +1,11 @@
 {
   "IsEncrypted": false,
-    "Values": {
-        "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=beerweather;AccountKey=Hw25zEHPg/d6+Fseju/1ts6LqVEK3PdJJ0zzrWZYna5Nvv4I9Zu9BZMOMkapzkR7GyK/ovXsR0yqK9hk4tUTBA==;EndpointSuffix=core.windows.net",
-        "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=beerweather;AccountKey=Hw25zEHPg/d6+Fseju/1ts6LqVEK3PdJJ0zzrWZYna5Nvv4I9Zu9BZMOMkapzkR7GyK/ovXsR0yqK9hk4tUTBA==;EndpointSuffix=core.windows.net",
-        "StorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=beerweather;AccountKey=Hw25zEHPg/d6+Fseju/1ts6LqVEK3PdJJ0zzrWZYna5Nvv4I9Zu9BZMOMkapzkR7GyK/ovXsR0yqK9hk4tUTBA==;EndpointSuffix=core.windows.net",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-        "OpenWeatherKey": "98038ed7c159977f2e7b0b6aad6cbda5",
-        "AzureMapsKey": "YN2mtWp_iiz1-dJSJnp54-SV7W_esamQeF2uXzz4wv8"
-    }
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=beerweather;AccountKey=Hw25zEHPg/d6+Fseju/1ts6LqVEK3PdJJ0zzrWZYna5Nvv4I9Zu9BZMOMkapzkR7GyK/ovXsR0yqK9hk4tUTBA==;EndpointSuffix=core.windows.net",
+    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=beerweather;AccountKey=Hw25zEHPg/d6+Fseju/1ts6LqVEK3PdJJ0zzrWZYna5Nvv4I9Zu9BZMOMkapzkR7GyK/ovXsR0yqK9hk4tUTBA==;EndpointSuffix=core.windows.net",
+    "StorageConnectionString": "DefaultEndpointsProtocol=https;AccountName=beerweather;AccountKey=Hw25zEHPg/d6+Fseju/1ts6LqVEK3PdJJ0zzrWZYna5Nvv4I9Zu9BZMOMkapzkR7GyK/ovXsR0yqK9hk4tUTBA==;EndpointSuffix=core.windows.net",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "OpenWeatherKey": "98038ed7c159977f2e7b0b6aad6cbda5",
+    "AzureMapsKey": "YN2mtWp_iiz1-dJSJnp54-SV7W_esamQeF2uXzz4wv8"
+  }
 }

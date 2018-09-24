@@ -12,14 +12,15 @@ using System.Threading.Tasks;
 using System;
 using WeatherForBeer;
 using Microsoft.WindowsAzure.Storage.Blob;
+using System.Globalization;
 
 namespace BeerWeather
 {
-    public static class Beer
+    public class Beer
     {
 
         [FunctionName("beer")]
-        public static async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, ILogger log)
+        public async static Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, ILogger log)
         {
 
             string cityName = req.Query["cityName"];
@@ -48,7 +49,7 @@ namespace BeerWeather
                     CloudBlobContainer blobContainer = await CreateBlobContainer(storageAccount, blobContainerReference);
 
                     string guid = Guid.NewGuid().ToString();
-                    string blobUrl = CreateCloudBlockBlob(cityName, countryCode, guid, blobContainer, storageAccount);
+                    string blobUrl = await RetrieveCloudBlockBlob(guid, log);
 
                     log.LogInformation("Created cloud blob: {0}", blobUrl);
                     string openWeatherIn = "locations-openweather-in";
@@ -78,6 +79,7 @@ namespace BeerWeather
                  : new BadRequestObjectResult(result);
         }
 
+        /*
         private static string CreateCloudBlockBlob(string cityName, string countryCode, string guidString, CloudBlobContainer blobContainer, CloudStorageAccount storageAccount)
         {
 
@@ -88,7 +90,7 @@ namespace BeerWeather
 
             string blobUrl = cloudBlockBlob.StorageUri.PrimaryUri.ToString();
             return blobUrl;
-        }
+        } */
 
         private static async Task<CloudBlobContainer> CreateBlobContainer(CloudStorageAccount storageAccount, string reference)
         {
@@ -129,6 +131,51 @@ namespace BeerWeather
             var messageAsJson = JsonConvert.SerializeObject(l);
             var cloudQueueMessage = new CloudQueueMessage(messageAsJson);
             return cloudQueueMessage;
+        }
+
+
+
+        private async static Task<string> RetrieveCloudBlockBlob(string guid, ILogger log)
+        {
+            var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+            CloudBlobContainer blobContainer = blobClient.GetContainerReference("beerweather-blobs");
+            await blobContainer.CreateIfNotExistsAsync();
+
+            //call to set the shared access policy on the container
+            //in the real world, this would be passed in, not hardcoded!
+            string sharedAccessPolicyName = "TestPolicy";
+            await CreateSharedAccessPolicy(blobContainer, sharedAccessPolicyName);
+
+
+            string fileName = String.Format("{0}.png", guid);
+            CloudBlockBlob cloudBlockBlob = blobContainer.GetBlockBlobReference(fileName);
+            cloudBlockBlob.Properties.ContentType = "image/png";
+            string sas = CreateSharedAccesSignatureForCloudBlockBlob(cloudBlockBlob, sharedAccessPolicyName);
+            return sas;
+        }
+
+        public static string CreateSharedAccesSignatureForCloudBlockBlob(CloudBlockBlob cloudBlockBlob, string policyName)
+        {
+            string sasToken = cloudBlockBlob.GetSharedAccessSignature(null, policyName);
+            return string.Format(CultureInfo.InvariantCulture, "{0}{1}", cloudBlockBlob.Uri, sasToken);
+        }
+
+        private async static Task CreateSharedAccessPolicy(CloudBlobContainer blobContainer, string policyName)
+        {
+
+            SharedAccessBlobPolicy storedPolicy = new SharedAccessBlobPolicy()
+            {
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
+                Permissions = SharedAccessBlobPermissions.Read
+
+            };
+
+            //let's start with a new collection of permissions (this wipes out any old ones)
+            BlobContainerPermissions permissions = new BlobContainerPermissions();
+            permissions.SharedAccessPolicies.Clear();
+            permissions.SharedAccessPolicies.Add(policyName, storedPolicy);
+            await blobContainer.SetPermissionsAsync(permissions);
         }
     }
 

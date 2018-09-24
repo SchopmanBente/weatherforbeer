@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,10 +11,10 @@ using Newtonsoft.Json;
 
 namespace WeatherForBeer
 {
-    public static class Maps
+    public class Maps
     {
         [FunctionName("Maps")]
-        public static async Task RunAsync([QueueTrigger("locations-openweather-out", Connection = "AzureWebJobsStorage")]string myQueueItem, ILogger log)
+        public async static Task RunAsync([QueueTrigger("locations-openweather-out", Connection = "AzureWebJobsStorage")]string myQueueItem, ILogger log)
         {
             log.LogInformation($"C# Queue trigger function processed: {myQueueItem}");
 
@@ -99,24 +100,48 @@ namespace WeatherForBeer
             return tekst1;
         }
 
-        private static async Task<CloudBlockBlob> RetrieveCloudBlockBlob(BlobTriggerMessage l, ILogger log)
+        private async Task<CloudBlockBlob> RetrieveCloudBlockBlob(BlobTriggerMessage l, ILogger log)
         {
             var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer blobContainer = blobClient.GetContainerReference("beerweather-blobs");
             await blobContainer.CreateIfNotExistsAsync();
 
-            // Set the permissions so the blobs are public. 
-            BlobContainerPermissions permissions = new BlobContainerPermissions
-            {
-                PublicAccess = BlobContainerPublicAccessType.Blob
-            };
-            await blobContainer.SetPermissionsAsync(permissions); 
+            //call to set the shared access policy on the container
+            //in the real world, this would be passed in, not hardcoded!
+            string sharedAccessPolicyName = "TestPolicy";
+            await CreateSharedAccessPolicy(blobContainer, sharedAccessPolicyName);
 
-            string fileName = String.Format("{0}.png",l.Guid);
+
+            string fileName = String.Format("{0}.png", l.Guid);
             CloudBlockBlob cloudBlockBlob = blobContainer.GetBlockBlobReference(fileName);
             cloudBlockBlob.Properties.ContentType = "image/png";
+            CreateSharedAccesSignatureForCloudBlockBlob(cloudBlockBlob, sharedAccessPolicyName);
             return cloudBlockBlob;
         }
+
+        public string CreateSharedAccesSignatureForCloudBlockBlob(CloudBlockBlob cloudBlockBlob, string policyName)
+        {
+            string sasToken = cloudBlockBlob.GetSharedAccessSignature(null, policyName);
+            return string.Format(CultureInfo.InvariantCulture, "{0}{1}", cloudBlockBlob.Uri, sasToken);
+        }
+
+        private async Task CreateSharedAccessPolicy(CloudBlobContainer blobContainer, string policyName)
+        {
+           
+            SharedAccessBlobPolicy storedPolicy = new SharedAccessBlobPolicy()
+            {
+                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
+                Permissions = SharedAccessBlobPermissions.Read 
+                  
+            };
+
+            //let's start with a new collection of permissions (this wipes out any old ones)
+            BlobContainerPermissions permissions = new BlobContainerPermissions();
+            permissions.SharedAccessPolicies.Clear();
+            permissions.SharedAccessPolicies.Add(policyName, storedPolicy);
+            await blobContainer.SetPermissionsAsync(permissions);
+        }
+
     }
 }
