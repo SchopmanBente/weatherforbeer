@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="WeatherForBeer20180924041146" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\Users\\blsch\\Documents\\Hogeschool\ Inholland\\Jaar\ 4\\cloud\\server\ side\ programming\\WeatherForBeer\\WeatherForBeer\\WeatherForBeer\\obj\\Release\\netstandard2\.0\\PubTmp\\Out\\$" />
+  </parameter>
+</parameters>
