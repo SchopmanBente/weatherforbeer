@@ -22,8 +22,8 @@ namespace BeerWeather
     public class Beer
     {
 
-        [FunctionName("beer")]
-        public async static Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, ILogger log)
+        [FunctionName("Beer")]
+        public async static Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, ILogger log)
         {
 
             string cityName = req.Query["cityName"];
@@ -40,7 +40,8 @@ namespace BeerWeather
             {
                 var countries = new RipeISOCountryReader().GetDefault();
                 var lookup = new ISOCountryLookup<RipeCountry>(countries);
-                lookup.TryGetByAlpha2(countryCode.ToUpper(), out RipeCountry isCode);
+                RipeCountry isCode = null;
+                lookup.TryGetByAlpha2(countryCode.ToUpper(), out isCode);
                 if (isCode == null)
                 {
                     return new BadRequestObjectResult("The country doesn't exist!");
@@ -61,7 +62,7 @@ namespace BeerWeather
                         string guid = Guid.NewGuid().ToString();
                         string blobUrl = await RetrieveCloudBlockBlob(guid, log);
 
-                        log.LogInformation("Created cloud blob: {0}", blobUrl);
+                        log.LogInformation("Created cloud blob: {0}.png", guid);
                         string openWeatherIn = "locations-openweather-in";
 
                         CloudQueueMessage cloudQueueMessage = CreateApiMessage(cityName, countryCode, blobUrl, blobContainerReference, guid);
@@ -73,7 +74,7 @@ namespace BeerWeather
 
                         log.LogInformation("Posted object in queue locations-openweather-in");
 
-                        result = String.Format("Your beerreport can be found at localhost:7071/api/BeerReport?url={0}", blobUrl);
+                        result = String.Format("Your beerreport can be found at {0}", blobUrl);
 
 
                     }
@@ -102,7 +103,7 @@ namespace BeerWeather
             // Set the permissions so the blobs are public. 
             BlobContainerPermissions permissions = new BlobContainerPermissions
             {
-                PublicAccess = BlobContainerPublicAccessType.Blob
+                PublicAccess = BlobContainerPublicAccessType.Off
             };
             await blobContainer.SetPermissionsAsync(permissions);
             return blobContainer;
@@ -143,41 +144,21 @@ namespace BeerWeather
             CloudBlobContainer blobContainer = blobClient.GetContainerReference("beerweather-blobs");
             await blobContainer.CreateIfNotExistsAsync();
 
-            //call to set the shared access policy on the container
-            //in the real world, this would be passed in, not hardcoded!
-            string sharedAccessPolicyName = "TestPolicy";
-            await CreateSharedAccessPolicy(blobContainer, sharedAccessPolicyName);
+            var sas = blobContainer.GetSharedAccessSignature(new SharedAccessBlobPolicy()
+            {
+                Permissions = SharedAccessBlobPermissions.Read,
+                SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(15)
+            });
 
 
             string fileName = String.Format("{0}.png", guid);
             CloudBlockBlob cloudBlockBlob = blobContainer.GetBlockBlobReference(fileName);
             cloudBlockBlob.Properties.ContentType = "image/png";
-            string sas = CreateSharedAccesSignatureForCloudBlockBlob(cloudBlockBlob, sharedAccessPolicyName);
-            return sas;
+            string imageUrl = string.Format("{0}/{1}{2}", blobContainer.StorageUri.PrimaryUri.AbsoluteUri , fileName , sas);
+            return imageUrl;
         }
 
-        public static string CreateSharedAccesSignatureForCloudBlockBlob(CloudBlockBlob cloudBlockBlob, string policyName)
-        {
-            string sasToken = cloudBlockBlob.GetSharedAccessSignature(null, policyName);
-            return string.Format(CultureInfo.InvariantCulture, "{0}{1}", cloudBlockBlob.Uri, sasToken);
-        }
-
-        private async static Task CreateSharedAccessPolicy(CloudBlobContainer blobContainer, string policyName)
-        {
-
-            SharedAccessBlobPolicy storedPolicy = new SharedAccessBlobPolicy()
-            {
-                SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(30),
-                Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write | SharedAccessBlobPermissions.Create
-
-            };
-
-            //let's start with a new collection of permissions (this wipes out any old ones)
-            BlobContainerPermissions permissions = new BlobContainerPermissions();
-            permissions.SharedAccessPolicies.Clear();
-            permissions.SharedAccessPolicies.Add(policyName, storedPolicy);
-            await blobContainer.SetPermissionsAsync(permissions);
-        }
+      
     }
 
 

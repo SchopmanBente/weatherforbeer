@@ -1,7 +1,7 @@
 {
   "runtimeTarget": {
     "name": ".NETStandard,Version=v2.0/",
-    "signature": "4cee1b961c45ee540b23d2ecedcf1ea19da5f3a8"
+    "signature": "269f50e910f2f2d48645112ac8eee118febb8a2f"
   },
   "compilationOptions": {},
   "targets": {
@@ -12,6 +12,7 @@
           "Microsoft.Azure.WebJobs.Extensions.Storage": "3.0.0",
           "Microsoft.NET.Sdk.Functions": "1.0.22",
           "NETStandard.Library": "2.0.3",
+          "NISOCountries.Ripe": "1.2.0",
           "Newtonsoft.Json": "11.0.2",
           "SixLabors.ImageSharp.Drawing": "1.0.0-beta0005",
           "WindowsAzure.Storage": "9.3.2"
@@ -789,6 +790,25 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {
             "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.1.20722"
+          }
+        }
+      },
+      "NISOCountries.Core/1.2.0": {
+        "runtime": {
+          "lib/netstandard2.0/NISOCountries.Core.dll": {
+            "assemblyVersion": "1.2.0.0",
+            "fileVersion": "1.2.0.0"
+          }
+        }
+      },
+      "NISOCountries.Ripe/1.2.0": {
+        "dependencies": {
+          "NISOCountries.Core": "1.2.0"
+        },
+        "runtime": {
+          "lib/netstandard2.0/NISOCountries.Ripe.dll": {
+            "assemblyVersion": "1.2.0.0",
+            "fileVersion": "1.2.0.0"
           }
         }
       },
@@ -2023,6 +2043,20 @@
       "sha512": "sha512-5PYT/IqQ+UK31AmZiSS102R6EsTo+LGTSI8bp7WAUqDKaF4wHXD8U9u4WxTI1vc64tYi++8p3dk3WWNqPFgldw==",
       "path": "newtonsoft.json.bson/1.0.1",
       "hashPath": "newtonsoft.json.bson.1.0.1.nupkg.sha512"
+    },
+    "NISOCountries.Core/1.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TKl8sLVvEkyT7HVD+X6NzAytbofxWe943ROjIu05Hzj9vm04MYWrPE6ZSlAsUgH4qt8qyineE5yqUy+t8AM/Mw==",
+      "path": "nisocountries.core/1.2.0",
+      "hashPath": "nisocountries.core.1.2.0.nupkg.sha512"
+    },
+    "NISOCountries.Ripe/1.2.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qCSaS0L7t6sxisHcSCmJ09Pxt8qt0Hqwjka/7eAQYuw6iA8JGkLnc5yGfPrj+Y/uYFo8UkBhMkOT9WjhqkJQ6g==",
+      "path": "nisocountries.ripe/1.2.0",
+      "hashPath": "nisocountries.ripe.1.2.0.nupkg.sha512"
     },
     "runtime.native.System/4.3.0": {
       "type": "package",
