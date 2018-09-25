@@ -882,6 +882,27 @@
           "lib/netstandard1.3/Newtonsoft.Json.Bson.dll": {}
         }
       },
+      "NISOCountries.Core/1.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/NISOCountries.Core.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/NISOCountries.Core.dll": {}
+        }
+      },
+      "NISOCountries.Ripe/1.2.0": {
+        "type": "package",
+        "dependencies": {
+          "NISOCountries.Core": "1.2.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/NISOCountries.Ripe.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/NISOCountries.Ripe.dll": {}
+        }
+      },
       "runtime.native.System/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -2894,6 +2915,44 @@
         "lib/netstandard1.3/Newtonsoft.Json.Bson.xml",
         "newtonsoft.json.bson.1.0.1.nupkg.sha512",
         "newtonsoft.json.bson.nuspec"
+      ]
+    },
+    "NISOCountries.Core/1.2.0": {
+      "sha512": "TKl8sLVvEkyT7HVD+X6NzAytbofxWe943ROjIu05Hzj9vm04MYWrPE6ZSlAsUgH4qt8qyineE5yqUy+t8AM/Mw==",
+      "type": "package",
+      "path": "nisocountries.core/1.2.0",
+      "files": [
+        "lib/net45/NISOCountries.Core.dll",
+        "lib/net451/NISOCountries.Core.dll",
+        "lib/net452/NISOCountries.Core.dll",
+        "lib/net46/NISOCountries.Core.dll",
+        "lib/net461/NISOCountries.Core.dll",
+        "lib/net462/NISOCountries.Core.dll",
+        "lib/net47/NISOCountries.Core.dll",
+        "lib/net471/NISOCountries.Core.dll",
+        "lib/netcoreapp2.0/NISOCountries.Core.dll",
+        "lib/netstandard2.0/NISOCountries.Core.dll",
+        "nisocountries.core.1.2.0.nupkg.sha512",
+        "nisocountries.core.nuspec"
+      ]
+    },
+    "NISOCountries.Ripe/1.2.0": {
+      "sha512": "qCSaS0L7t6sxisHcSCmJ09Pxt8qt0Hqwjka/7eAQYuw6iA8JGkLnc5yGfPrj+Y/uYFo8UkBhMkOT9WjhqkJQ6g==",
+      "type": "package",
+      "path": "nisocountries.ripe/1.2.0",
+      "files": [
+        "lib/net45/NISOCountries.Ripe.dll",
+        "lib/net451/NISOCountries.Ripe.dll",
+        "lib/net452/NISOCountries.Ripe.dll",
+        "lib/net46/NISOCountries.Ripe.dll",
+        "lib/net461/NISOCountries.Ripe.dll",
+        "lib/net462/NISOCountries.Ripe.dll",
+        "lib/net47/NISOCountries.Ripe.dll",
+        "lib/net471/NISOCountries.Ripe.dll",
+        "lib/netcoreapp2.0/NISOCountries.Ripe.dll",
+        "lib/netstandard2.0/NISOCountries.Ripe.dll",
+        "nisocountries.ripe.1.2.0.nupkg.sha512",
+        "nisocountries.ripe.nuspec"
       ]
     },
     "runtime.native.System/4.3.0": {
@@ -5991,6 +6050,7 @@
       "Microsoft.Azure.WebJobs.Extensions.Storage >= 3.0.0",
       "Microsoft.NET.Sdk.Functions >= 1.0.22",
       "NETStandard.Library >= 2.0.3",
+      "NISOCountries.Ripe >= 1.2.0",
       "Newtonsoft.Json >= 11.0.2",
       "SixLabors.ImageSharp.Drawing >= 1.0.0-beta0005",
       "WindowsAzure.Storage >= 9.3.2"
@@ -6050,6 +6110,10 @@
             "target": "Package",
             "version": "[2.0.3, )",
             "autoReferenced": true
+          },
+          "NISOCountries.Ripe": {
+            "target": "Package",
+            "version": "[1.2.0, )"
           },
           "Newtonsoft.Json": {
             "target": "Package",

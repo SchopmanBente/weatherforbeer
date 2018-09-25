@@ -58,6 +58,8 @@ C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programmi
 C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programming\WeatherForBeer\WeatherForBeer\WeatherForBeer\bin\Debug\netstandard2.0\bin\NCrontab.Signed.dll
 C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programming\WeatherForBeer\WeatherForBeer\WeatherForBeer\bin\Debug\netstandard2.0\bin\Newtonsoft.Json.dll
 C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programming\WeatherForBeer\WeatherForBeer\WeatherForBeer\bin\Debug\netstandard2.0\bin\Newtonsoft.Json.Bson.dll
+C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programming\WeatherForBeer\WeatherForBeer\WeatherForBeer\bin\Debug\netstandard2.0\bin\NISOCountries.Core.dll
+C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programming\WeatherForBeer\WeatherForBeer\WeatherForBeer\bin\Debug\netstandard2.0\bin\NISOCountries.Ripe.dll
 C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programming\WeatherForBeer\WeatherForBeer\WeatherForBeer\bin\Debug\netstandard2.0\bin\SixLabors.Core.dll
 C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programming\WeatherForBeer\WeatherForBeer\WeatherForBeer\bin\Debug\netstandard2.0\bin\SixLabors.Fonts.dll
 C:\Users\blsch\Documents\Hogeschool Inholland\Jaar 4\cloud\server side programming\WeatherForBeer\WeatherForBeer\WeatherForBeer\bin\Debug\netstandard2.0\bin\SixLabors.ImageSharp.dll

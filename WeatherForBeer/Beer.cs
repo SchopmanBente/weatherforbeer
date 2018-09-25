@@ -13,6 +13,9 @@ using System;
 using WeatherForBeer;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Globalization;
+using NISOCountries.Ripe;
+using NISOCountries.Core;
+using System.Net.Http;
 
 namespace BeerWeather
 {
@@ -31,46 +34,56 @@ namespace BeerWeather
             countryCode = countryCode ?? data?.countryCode;
             string result = "";
 
+            HttpResponseMessage httpResponseMessage = new HttpResponseMessage();
+
             if (cityName != null & countryCode.Length == 2)
             {
-                try
+                var countries = new RipeISOCountryReader().GetDefault();
+                var lookup = new ISOCountryLookup<RipeCountry>(countries);
+                lookup.TryGetByAlpha2(countryCode.ToUpper(), out RipeCountry isCode);
+                if (isCode == null)
                 {
-                    countryCode = countryCode.ToLower();
-
-                    log.LogInformation("Receiving StorageAccount");
-
-                    var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("StorageConnectionString"));
-                    //var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
-                    //var storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=beerweather;AccountKey=Hw25zEHPg/d6+Fseju/1ts6LqVEK3PdJJ0zzrWZYna5Nvv4I9Zu9BZMOMkapzkR7GyK/ovXsR0yqK9hk4tUTBA==;EndpointSuffix=core.windows.net");
-
-                    log.LogInformation("Received storageAccount {0}", storageAccount.Credentials.AccountName.ToString());
-
-                    string blobContainerReference = "beerweather-blobs";
-                    CloudBlobContainer blobContainer = await CreateBlobContainer(storageAccount, blobContainerReference);
-
-                    string guid = Guid.NewGuid().ToString();
-                    string blobUrl = await RetrieveCloudBlockBlob(guid, log);
-
-                    log.LogInformation("Created cloud blob: {0}", blobUrl);
-                    string openWeatherIn = "locations-openweather-in";
-
-                    CloudQueueMessage cloudQueueMessage = CreateApiMessage(cityName, countryCode, blobUrl, blobContainerReference, guid);
-                    CloudQueueClient client = storageAccount.CreateCloudQueueClient();
-                    var cloudQueue = client.GetQueueReference(openWeatherIn);
-                    await cloudQueue.CreateIfNotExistsAsync();
-
-                    await cloudQueue.AddMessageAsync(cloudQueueMessage);
-
-                    log.LogInformation("Posted object in queue locations-openweather-in");
-
-                    result = String.Format("Your beerreport can be found at localhost:7071/api/BeerReport?url={0}", blobUrl);
-
-
+                    return new BadRequestObjectResult("The country doesn't exist!");
                 }
-                catch
+                else
                 {
-                    result = "Please pass a name on the query string or in the request body";
+                    try
+                    {
+                        countryCode = countryCode.ToLower();
+
+                        log.LogInformation("Receiving StorageAccount");
+
+                        var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("StorageConnectionString"));
+
+                        string blobContainerReference = "beerweather-blobs";
+                        CloudBlobContainer blobContainer = await CreateBlobContainer(storageAccount, blobContainerReference);
+
+                        string guid = Guid.NewGuid().ToString();
+                        string blobUrl = await RetrieveCloudBlockBlob(guid, log);
+
+                        log.LogInformation("Created cloud blob: {0}", blobUrl);
+                        string openWeatherIn = "locations-openweather-in";
+
+                        CloudQueueMessage cloudQueueMessage = CreateApiMessage(cityName, countryCode, blobUrl, blobContainerReference, guid);
+                        CloudQueueClient client = storageAccount.CreateCloudQueueClient();
+                        var cloudQueue = client.GetQueueReference(openWeatherIn);
+                        await cloudQueue.CreateIfNotExistsAsync();
+
+                        await cloudQueue.AddMessageAsync(cloudQueueMessage);
+
+                        log.LogInformation("Posted object in queue locations-openweather-in");
+
+                        result = String.Format("Your beerreport can be found at localhost:7071/api/BeerReport?url={0}", blobUrl);
+
+
+                    }
+                    catch
+                    {
+                        result = "Please pass a name on the query string or in the request body";
+                    }
                 }
+
+              
             }
 
 
