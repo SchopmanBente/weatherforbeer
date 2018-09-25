@@ -107,10 +107,8 @@ namespace WeatherForBeer
             CloudBlobContainer blobContainer = blobClient.GetContainerReference("beerweather-blobs");
             await blobContainer.CreateIfNotExistsAsync();
 
-            //call to set the shared access policy on the container
-            //in the real world, this would be passed in, not hardcoded!
             string sharedAccessPolicyName = "TestPolicy";
-            await CreateSharedAccessPolicy(blobContainer, sharedAccessPolicyName);
+            //await CreateSharedAccessPolicy(blobContainer, sharedAccessPolicyName);
 
 
             string fileName = String.Format("{0}.png", l.Guid);
@@ -126,6 +124,7 @@ namespace WeatherForBeer
             return string.Format(CultureInfo.InvariantCulture, "{0}{1}", cloudBlockBlob.Uri, sasToken);
         }
 
+        /*
         private async Task CreateSharedAccessPolicy(CloudBlobContainer blobContainer, string policyName)
         {
            
@@ -141,7 +140,7 @@ namespace WeatherForBeer
             permissions.SharedAccessPolicies.Clear();
             permissions.SharedAccessPolicies.Add(policyName, storedPolicy);
             await blobContainer.SetPermissionsAsync(permissions);
-        }
+        } */
 
     }
 }

@@ -63,11 +63,11 @@ namespace BeerWeather
 
                     log.LogInformation("Posted object in queue locations-openweather-in");
 
-                    result = String.Format("Your beerreport can be found at {0}", blobUrl);
+                    result = String.Format("Your beerreport can be found at localhost:7071/api/BeerReport?url={0}", blobUrl);
 
 
                 }
-                catch (Exception e)
+                catch
                 {
                     result = "Please pass a name on the query string or in the request body";
                 }
@@ -79,18 +79,6 @@ namespace BeerWeather
                  : new BadRequestObjectResult(result);
         }
 
-        /*
-        private static string CreateCloudBlockBlob(string cityName, string countryCode, string guidString, CloudBlobContainer blobContainer, CloudStorageAccount storageAccount)
-        {
-
-            string fileName = String.Format("{0}.png", guidString);
-            CloudBlockBlob cloudBlockBlob = blobContainer.GetBlockBlobReference(fileName);
-            cloudBlockBlob.Properties.ContentType = "image/png";
-
-
-            string blobUrl = cloudBlockBlob.StorageUri.PrimaryUri.ToString();
-            return blobUrl;
-        } */
 
         private static async Task<CloudBlobContainer> CreateBlobContainer(CloudStorageAccount storageAccount, string reference)
         {
@@ -166,8 +154,8 @@ namespace BeerWeather
 
             SharedAccessBlobPolicy storedPolicy = new SharedAccessBlobPolicy()
             {
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
-                Permissions = SharedAccessBlobPermissions.Read
+                SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(30),
+                Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write | SharedAccessBlobPermissions.Create
 
             };
 
