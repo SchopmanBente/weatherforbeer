@@ -56,27 +56,16 @@ namespace WeatherForBeer
                     {
                         log.LogInformation("An epic fail occured");
                     }
-
-                
-
-                   
                 }
                 catch(Exception e)
                 {
                     log.LogInformation(e.Data.ToString());
                 }
-          
-          
-                
             }
             catch
             {
 
             }
-           
-
-
-
 
         }
 
@@ -88,8 +77,7 @@ namespace WeatherForBeer
                 CityName = l.CityName,
                 CountryCode = l.CountryCode,
                 Blob = l.Blob,
-                BlobRef = l.BlobRef,
-                Guid = l.Guid
+                Guid = l.Guid,
             };
             return message;
         }

@@ -14,6 +14,5 @@ namespace WeatherForBeer
 
         public string Blob { get; set; }
 
-        public string BlobRef { get; set; }
     }
 }

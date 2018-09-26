@@ -58,7 +58,7 @@ namespace BeerWeather
 
                     log.LogInformation("Created cloud blob: {0}.png", guid);
 
-                    CloudQueueMessage cloudQueueMessage = CreateApiMessage(cityName, countryCode, blobUrl, blobContainerReference, guid);
+                    CloudQueueMessage cloudQueueMessage = CreateApiMessage(cityName, countryCode, blobUrl,guid);
                     CloudQueueClient client = storageAccount.CreateCloudQueueClient();
                     await AddMessageToQueue(cloudQueueMessage, client);
 
@@ -121,7 +121,7 @@ namespace BeerWeather
 
    
         
-        private static CloudQueueMessage CreateApiMessage(string cityName, string countryCode, string blobUrl, string blobContainerReference,
+        private static CloudQueueMessage CreateApiMessage(string cityName, string countryCode, string blobUrl,
             string guid)
         {
             TriggerMessage l = new TriggerMessage
@@ -129,7 +129,6 @@ namespace BeerWeather
                 CityName = cityName,
                 CountryCode = countryCode,
                 Blob = blobUrl,
-                BlobRef = blobContainerReference,
                 Guid = guid
             };
             var messageAsJson = JsonConvert.SerializeObject(l);
