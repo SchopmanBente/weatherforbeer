@@ -28,15 +28,14 @@ namespace BeerWeather
         public async static Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, ILogger log)
         {
 
-            string city = req.Query["city"];
-            string country = req.Query["country"];
+            string cityName = req.Query["city"];
+            string countryCode = req.Query["country"];
             string requestBody = new StreamReader(req.Body).ReadToEnd();
-            string result = "Please pass a name on the query string or in the request body";
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            city = city ?? data?.city;
-            country = country ?? data?.country;
-            if (string.IsNullOrWhiteSpace(country) || string.IsNullOrEmpty(country) ||  string.IsNullOrWhiteSpace(city) ||
-                string.IsNullOrEmpty(city) || country.Length != 2 || !CheckIfCountryIsValid(country) || !Regex.IsMatch(city, @"^[a-z]+$"))
+            cityName = cityName ?? data?.city;
+            countryCode = countryCode ?? data?.country;
+            if (string.IsNullOrWhiteSpace(countryCode) || string.IsNullOrWhiteSpace(cityName) ||
+                countryCode.Length != 2 || !CheckIfCountryIsValid(countryCode) || !Regex.IsMatch(cityName, @"^[a-z]+$"))
             {
                 return new BadRequestObjectResult("The input is not valid");
             }
@@ -44,8 +43,8 @@ namespace BeerWeather
             {
                 try
                 {
-                    country = country.ToLower();
-                    city = city.ToLower();
+                    countryCode = countryCode.ToLower();
+                    cityName = cityName.ToLower();
 
                     log.LogInformation("Receiving StorageAccount");
 
@@ -59,21 +58,21 @@ namespace BeerWeather
 
                     log.LogInformation("Created cloud blob: {0}.png", guid);
 
-                    CloudQueueMessage cloudQueueMessage = CreateApiMessage(city, country, blobUrl, blobContainerReference, guid);
+                    CloudQueueMessage cloudQueueMessage = CreateApiMessage(cityName, countryCode, blobUrl, blobContainerReference, guid);
                     CloudQueueClient client = storageAccount.CreateCloudQueueClient();
                     await AddMessageToQueue(cloudQueueMessage, client);
 
                     log.LogInformation("Posted object in queue locations-openweather-in");
 
-                    result = String.Format("Your beerreport is being generated for {0},{1} and can be found at <a>{2}</a>. This report is accessible" +
-                        "for 10 minutes", city, country, blobUrl);
+                    string result = String.Format("Your beerreport is being generated for {0},{1} and can be found at {2}. This report is accessible " +
+                        "for 10 minutes", cityName, countryCode, blobUrl);
                     return new OkObjectResult(result);
 
 
                 }
                 catch
                 {
-                    return new BadRequestObjectResult(result);
+                    return new BadRequestObjectResult("Something strange happened");
                 }
             }
 
