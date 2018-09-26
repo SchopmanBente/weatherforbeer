@@ -109,7 +109,6 @@ namespace WeatherForBeer
             await blobContainer.CreateIfNotExistsAsync();
 
             string sharedAccessPolicyName = "TestPolicy";
-            //await CreateSharedAccessPolicy(blobContainer, sharedAccessPolicyName);
 
 
             string fileName = String.Format("{0}.png", l.Guid);
@@ -124,24 +123,6 @@ namespace WeatherForBeer
             string sasToken = cloudBlockBlob.GetSharedAccessSignature(null, policyName);
             return string.Format(CultureInfo.InvariantCulture, "{0}{1}", cloudBlockBlob.Uri, sasToken);
         }
-
-        /*
-        private async Task CreateSharedAccessPolicy(CloudBlobContainer blobContainer, string policyName)
-        {
-           
-            SharedAccessBlobPolicy storedPolicy = new SharedAccessBlobPolicy()
-            {
-                SharedAccessExpiryTime = DateTime.UtcNow.AddHours(1),
-                Permissions = SharedAccessBlobPermissions.Read 
-                  
-            };
-
-            //let's start with a new collection of permissions (this wipes out any old ones)
-            BlobContainerPermissions permissions = new BlobContainerPermissions();
-            permissions.SharedAccessPolicies.Clear();
-            permissions.SharedAccessPolicies.Add(policyName, storedPolicy);
-            await blobContainer.SetPermissionsAsync(permissions);
-        } */
 
     }
 }

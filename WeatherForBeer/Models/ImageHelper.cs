@@ -26,7 +26,7 @@ namespace WeatherForBeer
                 {
                     foreach (var (text, (x, y)) in texts)
                     {
-                        img.DrawText(text, SystemFonts.CreateFont("Calibri",24), Rgba32.Black, new PointF(x, y));
+                        img.DrawText(text, SystemFonts.CreateFont("Calibri",24), Rgba32.Navy, new PointF(x, y));
                     }
                 })
                 .SaveAsPng(memoryStream);
