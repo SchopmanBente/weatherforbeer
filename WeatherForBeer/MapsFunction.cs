@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 
 namespace WeatherForBeer
 {
-    public class Maps
+    public class MapsFunction
     {
         [FunctionName("Maps")]
         public async static Task RunAsync([QueueTrigger("locations-openweather-out", Connection = "AzureWebJobsStorage")]string myQueueItem, ILogger log)
@@ -56,7 +56,8 @@ namespace WeatherForBeer
                     {
                         Stream responseContent = await response.Content.ReadAsStreamAsync();
                         double tempInCelsius = weatherRootObject.Main.Temp;
-                        string tekst2 = tempInCelsius.ToString();
+                        double windSpeed = weatherRootObject.Wind.Speed;
+                        string tekst2 = string.Format("Temp: {0} °C Wind:{1} km/u",tempInCelsius, windSpeed);
                         string tekst1 = GetBeerCaption(tempInCelsius);
                         var renderedImage = ImageHelper.AddTextToImage(responseContent, (tekst1, (10, 20)), (tekst2, (10, 50)));
 

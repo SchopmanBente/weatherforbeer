@@ -11,5 +11,5 @@
   ],
   "disabled": false,
   "scriptFile": "../bin/WeatherForBeer.dll",
-  "entryPoint": "WeatherForBeer.Maps.RunAsync"
+  "entryPoint": "WeatherForBeer.MapsFunction.RunAsync"
 }
