@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "b4ce46ee-e6eb-4415-9328-5b22aecfed09",
+		"name": "WeatherForBeerAPI",
+		"description": "The WeatherForBeer API has one call available. This call is available at: https://weatherforbeer20180924041146.azurewebsites.net/api/beer?city=<cityname>&country=<country>\n\nThe country parameter only accepts country codes from ISO 3166 -1. \n\nTo use this API you must authorize through the Azure Active Directory and log in with your organization account.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /beer",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "grant_type",
+						"value": "client_credentials"
+					},
+					{
+						"key": "client_secret",
+						"value": "4uWqpa+px/n2Uml05Ee/Y7GlQNdZ3EhTjH7SmycXTno="
+					},
+					{
+						"key": "client_id",
+						"value": "90552793-1974-4dfa-a701-723eef601bdc"
+					},
+					{
+						"key": "resource",
+						"value": "https://weatherforbeer20180924041146.azurewebsites.net/.auth/login/aad/callback"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://weatherforbeer20180924041146.azurewebsites.net/api/beer?city=schagen&country=nl",
+					"protocol": "https",
+					"host": [
+						"weatherforbeer20180924041146",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"api",
+						"beer"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "schagen"
+						},
+						{
+							"key": "country",
+							"value": "nl"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/beer error : city",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "grant_type",
+						"value": "client_credentials"
+					},
+					{
+						"key": "client_secret",
+						"value": "4uWqpa+px/n2Uml05Ee/Y7GlQNdZ3EhTjH7SmycXTno="
+					},
+					{
+						"key": "client_id",
+						"value": "90552793-1974-4dfa-a701-723eef601bdc"
+					},
+					{
+						"key": "resource",
+						"value": "https://weatherforbeer20180924041146.azurewebsites.net/.auth/login/aad/callback"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://weatherforbeer20180924041146.azurewebsites.net/api/beer?city=78899888&country=nl",
+					"protocol": "https",
+					"host": [
+						"weatherforbeer20180924041146",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"api",
+						"beer"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "78899888"
+						},
+						{
+							"key": "country",
+							"value": "nl"
+						}
+					]
+				},
+				"description": "The displayed error when the city is not in lowercase letters"
+			},
+			"response": []
+		},
+		{
+			"name": "/beer error : city Copy",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "grant_type",
+						"value": "client_credentials"
+					},
+					{
+						"key": "client_secret",
+						"value": "4uWqpa+px/n2Uml05Ee/Y7GlQNdZ3EhTjH7SmycXTno="
+					},
+					{
+						"key": "client_id",
+						"value": "90552793-1974-4dfa-a701-723eef601bdc"
+					},
+					{
+						"key": "resource",
+						"value": "https://weatherforbeer20180924041146.azurewebsites.net/.auth/login/aad/callback"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://weatherforbeer20180924041146.azurewebsites.net/api/beer?city=78899888&country=nl",
+					"protocol": "https",
+					"host": [
+						"weatherforbeer20180924041146",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"api",
+						"beer"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "78899888"
+						},
+						{
+							"key": "country",
+							"value": "nl"
+						}
+					]
+				},
+				"description": "The displayed error when the city is not in lowercase letters"
+			},
+			"response": []
+		},
+		{
+			"name": "/beer error: empty",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "grant_type",
+						"value": "client_credentials"
+					},
+					{
+						"key": "client_secret",
+						"value": "4uWqpa+px/n2Uml05Ee/Y7GlQNdZ3EhTjH7SmycXTno="
+					},
+					{
+						"key": "client_id",
+						"value": "90552793-1974-4dfa-a701-723eef601bdc"
+					},
+					{
+						"key": "resource",
+						"value": "https://weatherforbeer20180924041146.azurewebsites.net/.auth/login/aad/callback"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://weatherforbeer20180924041146.azurewebsites.net/api/beer",
+					"protocol": "https",
+					"host": [
+						"weatherforbeer20180924041146",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"api",
+						"beer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "/beer error : country",
+			"request": {
+				"auth": {
+					"type": "oauth2",
+					"oauth2": [
+						{
+							"key": "addTokenTo",
+							"value": "header",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "grant_type",
+						"value": "client_credentials"
+					},
+					{
+						"key": "client_secret",
+						"value": "4uWqpa+px/n2Uml05Ee/Y7GlQNdZ3EhTjH7SmycXTno="
+					},
+					{
+						"key": "client_id",
+						"value": "90552793-1974-4dfa-a701-723eef601bdc"
+					},
+					{
+						"key": "resource",
+						"value": "https://weatherforbeer20180924041146.azurewebsites.net/.auth/login/aad/callback"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "https://weatherforbeer20180924041146.azurewebsites.net/api/beer?city=78899888&country=nl",
+					"protocol": "https",
+					"host": [
+						"weatherforbeer20180924041146",
+						"azurewebsites",
+						"net"
+					],
+					"path": [
+						"api",
+						"beer"
+					],
+					"query": [
+						{
+							"key": "city",
+							"value": "78899888"
+						},
+						{
+							"key": "country",
+							"value": "nl"
+						}
+					]
+				},
+				"description": "The displayed error when the countrycode is not ISO 3166 compatible and has not a maximum length of 2"
+			},
+			"response": []
+		}
+	]
+}

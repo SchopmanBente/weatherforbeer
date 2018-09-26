@@ -25,7 +25,7 @@ namespace BeerWeather
 
 
         [FunctionName("beer")]
-        public async static Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, ILogger log)
+        public async static Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, ILogger log)
         {
 
             string cityName = req.Query["city"];
