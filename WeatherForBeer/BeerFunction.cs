@@ -54,7 +54,7 @@ namespace BeerWeather
                     CloudBlobContainer blobContainer = await CreateBlobContainer(storageAccount, blobContainerReference);
 
                     string guid = Guid.NewGuid().ToString();
-                    string blobUrl = await RetrieveCloudBlockBlob(guid, log);
+                    string blobUrl = await CreateCloudBlockBlob(guid, log);
 
                     log.LogInformation("Created cloud blob: {0}.png", guid);
 
@@ -76,7 +76,6 @@ namespace BeerWeather
                 }
             }
 
-          
         }
 
         private static async Task AddMessageToQueue(CloudQueueMessage cloudQueueMessage, CloudQueueClient client)
@@ -93,8 +92,7 @@ namespace BeerWeather
             bool isValid = false;
             var countries = new RipeISOCountryReader().GetDefault();
             var lookup = new ISOCountryLookup<RipeCountry>(countries);
-            RipeCountry isCode = null;
-            lookup.TryGetByAlpha2(countryCode.ToUpper(), out isCode);
+            lookup.TryGetByAlpha2(countryCode.ToUpper(), out RipeCountry isCode);
             if (isCode != null)
             {
                 isValid = true;
@@ -102,25 +100,20 @@ namespace BeerWeather
             return isValid;
         }
 
-
-        
         private static async Task<CloudBlobContainer> CreateBlobContainer(CloudStorageAccount storageAccount, string reference)
         {
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             CloudBlobContainer blobContainer = blobClient.GetContainerReference(reference);
             await blobContainer.CreateIfNotExistsAsync();
 
-            // Set the permissions so the blobs are public. 
             BlobContainerPermissions permissions = new BlobContainerPermissions
             {
                 PublicAccess = BlobContainerPublicAccessType.Off
             };
             await blobContainer.SetPermissionsAsync(permissions);
             return blobContainer;
-        } 
+        }
 
-   
-        
         private static CloudQueueMessage CreateApiMessage(string cityName, string countryCode, string blobUrl,
             string guid)
         {
@@ -134,11 +127,8 @@ namespace BeerWeather
             var messageAsJson = JsonConvert.SerializeObject(l);
             var cloudQueueMessage = new CloudQueueMessage(messageAsJson);
             return cloudQueueMessage;
-        } 
-
-
-        
-        private async static Task<string> RetrieveCloudBlockBlob(string guid, ILogger log)
+        }
+        private async static Task<string> CreateCloudBlockBlob(string guid, ILogger log)
         {
             var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
@@ -157,7 +147,7 @@ namespace BeerWeather
             cloudBlockBlob.Properties.ContentType = "image/png";
             string imageUrl = string.Format("{0}/{1}{2}", blobContainer.StorageUri.PrimaryUri.AbsoluteUri, fileName, sas);
             return imageUrl;
-        } 
+        }
 
     }
 }

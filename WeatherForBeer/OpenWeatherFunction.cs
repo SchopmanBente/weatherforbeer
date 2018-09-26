@@ -36,21 +36,10 @@ namespace WeatherForBeer
                     {
                         log.LogInformation("Response is binnen");
                         string content = await response.Content.ReadAsStringAsync();
+                        CloudQueueMessage cloudQueueMessage = CreateCloudQueueMessage(l, content);
 
                         var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
-
-
-                        var cloudClient = storageAccount.CreateCloudQueueClient();
-
-                        var queue = cloudClient.GetQueueReference("locations-openweather-out");
-                        await queue.CreateIfNotExistsAsync();
-
-                        BlobTriggerMessage message = CreateBlobTriggerMessage(l, content);
-
-                        var messageAsJson = JsonConvert.SerializeObject(message);
-                        var cloudQueueMessage = new CloudQueueMessage(messageAsJson);
-
-                        await queue.AddMessageAsync(cloudQueueMessage);
+                        await PostMessageToQueue(cloudQueueMessage, storageAccount);
                     }
                     else
                     {
@@ -67,6 +56,23 @@ namespace WeatherForBeer
 
             }
 
+        }
+
+        private static async Task PostMessageToQueue(CloudQueueMessage cloudQueueMessage, CloudStorageAccount storageAccount)
+        {
+            var cloudClient = storageAccount.CreateCloudQueueClient();
+            var queue = cloudClient.GetQueueReference("locations-openweather-out");
+            await queue.CreateIfNotExistsAsync();
+
+            await queue.AddMessageAsync(cloudQueueMessage);
+        }
+
+        private static CloudQueueMessage CreateCloudQueueMessage(TriggerMessage l, string content)
+        {
+            BlobTriggerMessage message = CreateBlobTriggerMessage(l, content);
+            var messageAsJson = JsonConvert.SerializeObject(message);
+            var cloudQueueMessage = new CloudQueueMessage(messageAsJson);
+            return cloudQueueMessage;
         }
 
         private static BlobTriggerMessage CreateBlobTriggerMessage(TriggerMessage l, string content)

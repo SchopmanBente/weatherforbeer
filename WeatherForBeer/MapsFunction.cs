@@ -65,7 +65,7 @@ namespace WeatherForBeer
             catch
             {
 
-            } 
+            }
         }
 
         private static async Task<CloudBlockBlob> GetCloudBlockBlob(BlobTriggerMessage message, CloudStorageAccount storageAccount)
@@ -92,7 +92,7 @@ namespace WeatherForBeer
             }
 
             return beerCaption;
-        }   
+        } 
 
     }
 }
