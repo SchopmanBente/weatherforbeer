@@ -16,84 +16,95 @@ using System.Globalization;
 using NISOCountries.Ripe;
 using NISOCountries.Core;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace BeerWeather
 {
     public class Beer
     {
 
-        [FunctionName("Beer")]
+
+        [FunctionName("beer")]
         public async static Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", Route = null)]HttpRequest req, ILogger log)
         {
 
-            string cityName = req.Query["cityName"];
-            string countryCode = req.Query["countryCode"];
+            string city = req.Query["city"];
+            string country = req.Query["country"];
             string requestBody = new StreamReader(req.Body).ReadToEnd();
+            string result = "Please pass a name on the query string or in the request body";
             dynamic data = JsonConvert.DeserializeObject(requestBody);
-            cityName = cityName ?? data?.cityName;
-            countryCode = countryCode ?? data?.countryCode;
-            string result = "";
-
-            HttpResponseMessage httpResponseMessage = new HttpResponseMessage();
-
-            if (cityName != null & countryCode.Length == 2)
+            city = city ?? data?.city;
+            country = country ?? data?.country;
+            if (string.IsNullOrWhiteSpace(country) || string.IsNullOrEmpty(country) ||  string.IsNullOrWhiteSpace(city) ||
+                string.IsNullOrEmpty(city) || country.Length != 2 || !CheckIfCountryIsValid(country) || !Regex.IsMatch(city, @"^[a-z]+$"))
             {
-                var countries = new RipeISOCountryReader().GetDefault();
-                var lookup = new ISOCountryLookup<RipeCountry>(countries);
-                RipeCountry isCode = null;
-                lookup.TryGetByAlpha2(countryCode.ToUpper(), out isCode);
-                if (isCode == null)
+                return new BadRequestObjectResult("The input is not valid");
+            }
+            else
+            {
+                try
                 {
-                    return new BadRequestObjectResult("The country doesn't exist!");
+                    country = country.ToLower();
+                    city = city.ToLower();
+
+                    log.LogInformation("Receiving StorageAccount");
+
+                    var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("StorageConnectionString"));
+
+                    string blobContainerReference = "beerweather-blobs";
+                    CloudBlobContainer blobContainer = await CreateBlobContainer(storageAccount, blobContainerReference);
+
+                    string guid = Guid.NewGuid().ToString();
+                    string blobUrl = await RetrieveCloudBlockBlob(guid, log);
+
+                    log.LogInformation("Created cloud blob: {0}.png", guid);
+
+                    CloudQueueMessage cloudQueueMessage = CreateApiMessage(city, country, blobUrl, blobContainerReference, guid);
+                    CloudQueueClient client = storageAccount.CreateCloudQueueClient();
+                    await AddMessageToQueue(cloudQueueMessage, client);
+
+                    log.LogInformation("Posted object in queue locations-openweather-in");
+
+                    result = String.Format("Your beerreport is being generated for {0},{1} and can be found at <a>{2}</a>. This report is accessible" +
+                        "for 10 minutes", city, country, blobUrl);
+                    return new OkObjectResult(result);
+
+
                 }
-                else
+                catch
                 {
-                    try
-                    {
-                        countryCode = countryCode.ToLower();
-
-                        log.LogInformation("Receiving StorageAccount");
-
-                        var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("StorageConnectionString"));
-
-                        string blobContainerReference = "beerweather-blobs";
-                        CloudBlobContainer blobContainer = await CreateBlobContainer(storageAccount, blobContainerReference);
-
-                        string guid = Guid.NewGuid().ToString();
-                        string blobUrl = await RetrieveCloudBlockBlob(guid, log);
-
-                        log.LogInformation("Created cloud blob: {0}.png", guid);
-                        string openWeatherIn = "locations-openweather-in";
-
-                        CloudQueueMessage cloudQueueMessage = CreateApiMessage(cityName, countryCode, blobUrl, blobContainerReference, guid);
-                        CloudQueueClient client = storageAccount.CreateCloudQueueClient();
-                        var cloudQueue = client.GetQueueReference(openWeatherIn);
-                        await cloudQueue.CreateIfNotExistsAsync();
-
-                        await cloudQueue.AddMessageAsync(cloudQueueMessage);
-
-                        log.LogInformation("Posted object in queue locations-openweather-in");
-
-                        result = String.Format("Your beerreport can be found at {0}", blobUrl);
-
-
-                    }
-                    catch
-                    {
-                        result = "Please pass a name on the query string or in the request body";
-                    }
+                    return new BadRequestObjectResult(result);
                 }
-
-              
             }
 
+          
+        }
 
-            return cityName != null & countryCode.Length == 2 & result != null
-                 ? (ActionResult)new OkObjectResult(result)
-                 : new BadRequestObjectResult(result);
+        private static async Task AddMessageToQueue(CloudQueueMessage cloudQueueMessage, CloudQueueClient client)
+        {
+            string openWeatherIn = "locations-openweather-in";
+            var cloudQueue = client.GetQueueReference(openWeatherIn);
+            await cloudQueue.CreateIfNotExistsAsync();
+
+            await cloudQueue.AddMessageAsync(cloudQueueMessage);
+        }
+
+        private static bool CheckIfCountryIsValid(string countryCode)
+        {
+            bool isValid = false;
+            var countries = new RipeISOCountryReader().GetDefault();
+            var lookup = new ISOCountryLookup<RipeCountry>(countries);
+            RipeCountry isCode = null;
+            lookup.TryGetByAlpha2(countryCode.ToUpper(), out isCode);
+            if (isCode != null)
+            {
+                isValid = true;
+            }
+            return isValid;
         }
 
 
+        
         private static async Task<CloudBlobContainer> CreateBlobContainer(CloudStorageAccount storageAccount, string reference)
         {
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
@@ -107,18 +118,10 @@ namespace BeerWeather
             };
             await blobContainer.SetPermissionsAsync(permissions);
             return blobContainer;
-        }
+        } 
 
-        private static async Task PostMessageToQueue(CloudStorageAccount storageAccount, string queue, CloudQueueMessage cloudQueueMessage)
-        {
-            CloudQueueClient client = storageAccount.CreateCloudQueueClient();
-            var cloudQueue = client.GetQueueReference(queue);
-            await cloudQueue.CreateIfNotExistsAsync();
-
-            await cloudQueue.AddMessageAsync(cloudQueueMessage);
-
-        }
-
+   
+        
         private static CloudQueueMessage CreateApiMessage(string cityName, string countryCode, string blobUrl, string blobContainerReference,
             string guid)
         {
@@ -133,10 +136,10 @@ namespace BeerWeather
             var messageAsJson = JsonConvert.SerializeObject(l);
             var cloudQueueMessage = new CloudQueueMessage(messageAsJson);
             return cloudQueueMessage;
-        }
+        } 
 
 
-
+        
         private async static Task<string> RetrieveCloudBlockBlob(string guid, ILogger log)
         {
             var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
@@ -147,19 +150,19 @@ namespace BeerWeather
             var sas = blobContainer.GetSharedAccessSignature(new SharedAccessBlobPolicy()
             {
                 Permissions = SharedAccessBlobPermissions.Read,
-                SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(15)
+                SharedAccessExpiryTime = DateTime.UtcNow.AddMinutes(10)
             });
 
 
             string fileName = String.Format("{0}.png", guid);
             CloudBlockBlob cloudBlockBlob = blobContainer.GetBlockBlobReference(fileName);
             cloudBlockBlob.Properties.ContentType = "image/png";
-            string imageUrl = string.Format("{0}/{1}{2}", blobContainer.StorageUri.PrimaryUri.AbsoluteUri , fileName , sas);
+            string imageUrl = string.Format("{0}/{1}{2}", blobContainer.StorageUri.PrimaryUri.AbsoluteUri, fileName, sas);
             return imageUrl;
-        }
+        } 
 
-      
     }
-
-
 }
+
+
+

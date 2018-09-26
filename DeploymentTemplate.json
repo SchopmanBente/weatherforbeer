@@ -18,7 +18,7 @@
       "httpLoggingEnabled": true
     },
 
-    "storageAccountName": "[concat(variables('baseName'))]",
+    "storageAccountName": "beerweather",
 
     "functionsName": "[concat(variables('baseName'), '-fun')]"
   },
