@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "b4ce46ee-e6eb-4415-9328-5b22aecfed09",
 		"name": "WeatherForBeerAPI",
-		"description": "The WeatherForBeer API has one call available. This call is available at: https://weatherforbeer20180924041146.azurewebsites.net/api/beer?city=<cityname>&country=<country>\n\nThe country parameter only accepts country codes from ISO 3166 -1. \n\nTo use this API you must authorize through the Azure Active Directory and log in with your organization account.",
+		"description": "The WeatherForBeer API has one call available. This call is available at: https://weatherforbeer20180924041146.azurewebsites.net/api/beer?city=<cityname>&country=<country>\n\nThe country parameter only accepts country codes from ISO 3166 -1.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
